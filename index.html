@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Win Go · Colour Prediction</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="page active" id="page-login">
+  <div class="wrap-auth">
+    <div class="brand">
+      <div class="brand-logo"><div class="brand-icon">◈</div><h1>WIN GO</h1></div>
+      <div class="brand-sub">Colour Prediction · Play &amp; Win</div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-title">Welcome back 👋</div>
+      <div class="auth-sub">Sign in to continue playing</div>
+      <div class="err-msg" id="login-err">Invalid email or password.</div>
+      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com"/></div>
+      <div class="field"><label>Password</label><input type="password" id="login-pass" placeholder="Enter password"/></div>
+      <button class="btn-primary" onclick="doLogin()">Sign In →</button>
+      <div class="divider">or</div>
+      <button class="btn-social" onclick="guestLogin()"><span>🎮</span> Play as Guest</button>
+      <div class="auth-switch">No account? <a onclick="goPage('page-signup')">Create one</a></div>
+    </div>
+  </div>
+  </div>
+
+  <div class="page" id="page-signup">
+  <div class="wrap-auth">
+    <div class="brand">
+      <div class="brand-logo"><div class="brand-icon">◈</div><h1>WIN GO</h1></div>
+      <div class="brand-sub">Create your account</div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-title">Join Win Go 🚀</div>
+      <div class="auth-sub">Start predicting and winning today</div>
+      <div class="err-msg" id="signup-err">Please fill all fields correctly.</div>
+      <div class="field-row">
+        <div class="field"><label>First name</label><input type="text" id="su-fname" placeholder="Raj"/></div>
+        <div class="field"><label>Last name</label><input type="text" id="su-lname" placeholder="Sharma"/></div>
+      </div>
+      <div class="field"><label>Email</label><input type="email" id="su-email" placeholder="you@example.com"/></div>
+      <div class="field"><label>Mobile</label><input type="tel" id="su-phone" placeholder="+91 98765 43210"/></div>
+      <div class="field-row">
+        <div class="field"><label>Password</label><input type="password" id="su-pass" placeholder="Min 6 chars"/></div>
+        <div class="field"><label>Confirm</label><input type="password" id="su-pass2" placeholder="Repeat"/></div>
+      </div>
+      <button class="btn-primary" onclick="doSignup()">Create Account →</button>
+      <div class="auth-switch">Have account? <a onclick="goPage('page-login')">Sign in</a></div>
+    </div>
+  </div>
+  </div>
+
+  <div class="page" id="page-game">
+  <div class="wrap">
+    <div class="hdr">
+      <div class="hdr-logo"><div class="hdr-icon">◈</div><h2>WIN GO</h2></div>
+      <div class="hdr-sub">1 Minute · Colour Prediction</div>
+    </div>
+    <div class="slot-box">
+      <div class="slot-top">
+        <div><div class="period-lbl">Period</div><div class="period-val" id="periodId">—</div></div>
+        <div class="timer-wrap"><div class="timer-lbl">Time Left</div><div class="timer-val" id="timerVal">01:00</div></div>
+      </div>
+      <div class="prog-track"><div class="prog-bar" id="progBar" style="width:100%"></div></div>
+    </div>
+    <div class="bal-row">
+      <div><div class="bal-lbl">Balance</div><div class="bal-amt" id="balAmt">₹1,000.00</div></div>
+      <button class="btn-ghost" onclick="doReset()">↺ Reset</button>
+    </div>
+    <div class="card">
+      <div class="sec-lbl">💰 Bet Amount</div>
+      <div class="bet-row"><input class="bet-inp" type="number" id="betAmt" value="100" min="10" step="10"/></div>
+      <div class="qrow">
+        <button class="qb" onclick="sb(10)">₹10</button><button class="qb" onclick="sb(50)">₹50</button>
+        <button class="qb" onclick="sb(100)">₹100</button><button class="qb" onclick="sb(500)">₹500</button>
+        <button class="qb" onclick="dbl()">×2</button><button class="qb" onclick="hlf()">½</button>
+      </div>
+    </div>
+    <div class="pending" id="pendingEl"><span>Select colour, size or number to bet ↓</span></div>
+    <div class="sdiv">Colour</div>
+    <div class="color-row">
+      <button class="cbtn cbtn-red" onclick="placeBet('red')">🔴 Red<span class="csub">WIN ×1.89</span></button>
+      <button class="cbtn cbtn-violet" onclick="placeBet('violet')">◈<br>Violet<br><span class="csub" style="font-size:.58rem">×4.00</span></button>
+      <button class="cbtn cbtn-green" onclick="placeBet('green')">🟢 Green<span class="csub">WIN ×1.89</span></button>
+    </div>
+    <div class="sdiv">Size</div>
+    <div class="size-row">
+      <button class="sbtn sbtn-big" onclick="placeBet('big')">🔼 Big<span class="ssub">5–9 · ×1.89</span></button>
+      <button class="sbtn sbtn-small" onclick="placeBet('small')">🔽 Small<span class="ssub">0–4 · ×1.89</span></button>
+    </div>
+    <div class="sdiv">Number</div>
+    <div class="card">
+      <div class="num-legend">
+        <div class="nl"><div class="nldot" style="background:var(--red)"></div>1–4 Red</div>
+        <div class="nl"><div class="nldot" style="background:var(--green)"></div>6–9 Green</div>
+        <div class="nl"><div class="nldot" style="background:linear-gradient(135deg,var(--red) 50%,var(--violet) 50%)"></div>0 Red+Violet</div>
+        <div class="nl"><div class="nldot" style="background:linear-gradient(135deg,var(--green) 50%,var(--violet) 50%)"></div>5 Green+Violet</div>
+        <div class="nl" style="color:#aaa;font-size:.63rem">All ×9.00</div>
+      </div>
+      <div class="ngrid" id="ngrid"></div>
+    </div>
+    <div class="result-card">
+      <div class="r-idle" id="rIdle">Awaiting next draw…</div>
+      <div class="r-spin" id="rSpin"><div class="ring"></div><div class="spin-txt">Drawing result…</div></div>
+      <div class="r-show" id="rShow">
+        <div class="r-period" id="rPeriod">PERIOD —</div>
+        <div class="rbubble" id="rBubble">5</div>
+        <div class="r-tags">
+          <div class="r-tag rtag-green" id="rColorTag">GREEN</div>
+          <div class="r-size-tag rst-big" id="rSizeTag">🔼 BIG</div>
+        </div>
+        <div class="r-out r-nobet" id="rOut">No bet placed</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-lbl">📊 Recent Results</div>
+      <div class="hdots" id="hdots"><span style="color:var(--muted);font-size:.76rem;font-weight:500">No results yet</span></div>
+    </div>
+  </div>
+  </div>
+
+  <div class="page" id="page-account">
+  <div class="wrap">
+    <div class="acc-page-title">My Account</div>
+
+    <div class="account-hero">
+      <div class="acc-top">
+        <div class="acc-avatar" id="accAvatar">G</div>
+        <div class="acc-info">
+          <div class="acc-name" id="accName">Guest Player</div>
+          <div class="acc-email" id="accEmail">user@example.com</div>
+          <div class="acc-joined" id="accJoined">🗓 Joined March 2026</div>
+        </div>
+        <button class="acc-edit-btn" onclick="openModal('modal-profile')">✏️ Edit</button>
+      </div>
+      <div class="wallet-strip">
+        <div class="ws-item"><div class="ws-val" id="wsBalance">₹1,000</div><div class="ws-lbl">Balance</div></div>
+        <div class="ws-item"><div class="ws-val" id="wsDeposited">₹0</div><div class="ws-lbl">Deposited</div></div>
+        <div class="ws-item"><div class="ws-val" id="wsWon">₹0</div><div class="ws-lbl">Total Won</div></div>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val" id="stRounds">0</div><div class="stat-lbl">Rounds</div></div>
+      <div class="stat-card s-win"><div class="stat-val" id="stWins">0</div><div class="stat-lbl">Wins</div></div>
+      <div class="stat-card s-lose"><div class="stat-val" id="stLosses">0</div><div class="stat-lbl">Losses</div></div>
+      <div class="stat-card s-streak"><div class="stat-val" id="stWinRate">0%</div><div class="stat-lbl">Win Rate</div></div>
+    </div>
+
+    <div class="sdiv">Wallet</div>
+    <div class="menu-group">
+      <button class="menu-item" onclick="openModal('modal-deposit')">
+        <div class="menu-icon" style="background:var(--green-l)">💳</div>
+        <div><div>Add Money</div><div class="menu-sub">Deposit to your wallet</div></div>
+        <div class="menu-right"><span style="color:var(--green);font-weight:800;font-size:.8rem">+ Add</span><span class="menu-arrow">›</span></div>
+      </button>
+      <button class="menu-item" onclick="openModal('modal-withdraw')">
+        <div class="menu-icon" style="background:var(--amber-l)">🏦</div>
+        <div><div>Withdraw</div><div class="menu-sub">Transfer to bank account</div></div>
+        <div class="menu-right"><span class="menu-arrow">›</span></div>
+      </button>
+      <button class="menu-item" onclick="openModal('modal-txhistory')">
+        <div class="menu-icon" style="background:var(--blue-l)">📄</div>
+        <div><div>Transaction History</div><div class="menu-sub">All bets, wins &amp; deposits</div></div>
+        <div class="menu-right"><span class="menu-arrow">›</span></div>
+      </button>
+    </div>
+
+    <div class="sdiv">Account</div>
+    <div class="menu-group">
+      <button class="menu-item" onclick="openModal('modal-profile')">
+        <div class="menu-icon" style="background:var(--violet-l)">👤</div>
+        <div><div>Edit Profile</div><div class="menu-sub">Name, mobile, email</div></div>
+        <div class="menu-right"><span class="menu-arrow">›</span></div>
+      </button>
+      <button class="menu-item" onclick="openModal('modal-password')">
+        <div class="menu-icon" style="background:var(--red-l)">🔐</div>
+        <div><div>Change Password</div><div class="menu-sub">Update your login password</div></div>
+        <div class="menu-right"><span class="menu-arrow">›</span></div>
+      </button>
+      <button class="menu-item" onclick="openModal('modal-refer')">
+        <div class="menu-icon" style="background:var(--green-l)">🎁</div>
+        <div><div>Refer &amp; Earn</div><div class="menu-sub">Invite friends, get ₹50 bonus</div></div>
+        <div class="menu-right"><span style="background:var(--green-l);color:var(--green);font-size:.65rem;font-weight:800;padding:3px 8px;border-radius:20px">₹50/friend</span><span class="menu-arrow">›</span></div>
+      </button>
+      <button class="menu-item" onclick="openModal('modal-notif')">
+        <div class="menu-icon" style="background:var(--amber-l)">🔔</div>
+        <div><div>Notifications</div><div class="menu-sub">Alerts, reminders, promotions</div></div>
+        <div class="menu-right"><div class="menu-badge">3</div><span class="menu-arrow">›</span></div>
+      </button>
+    </div>
+
+    <div class="sdiv">Help</div>
+    <div class="menu-group">
+      <button class="menu-item" onclick="openModal('modal-faq')">
+        <div class="menu-icon" style="background:var(--blue-l)">❓</div>
+        <div><div>FAQ &amp; Help Center</div><div class="menu-sub">How to play, rules, payouts</div></div>
+        <div class="menu-right"><span class="menu-arrow">›</span></div>
+      </button>
+      <button class="menu-item" onclick="openModal('modal-support')">
+        <div class="menu-icon" style="background:var(--violet-l)">💬</div>
+        <div><div>Contact Support</div><div class="menu-sub">Chat with our team 24/7</div></div>
+        <div class="menu-right"><span class="menu-arrow">›</span></div>
+      </button>
+      <button class="menu-item" onclick="openModal('modal-about')">
+        <div class="menu-icon" style="background:var(--card2)">ℹ️</div>
+        <div><div>About Win Go</div><div class="menu-sub">Version 1.0.0 · Terms · Privacy</div></div>
+        <div class="menu-right"><span class="menu-arrow">›</span></div>
+      </button>
+    </div>
+
+    <div class="menu-group">
+      <button class="menu-item danger" onclick="doLogout()">
+        <div class="menu-icon">🚪</div>
+        <div>Sign Out</div>
+        <div class="menu-right"><span class="menu-arrow">›</span></div>
+      </button>
+    </div>
+
+  </div>
+  </div>
+
+  <div class="page" id="page-aviator">
+  <div class="avi-wrap">
+
+    <div class="avi-sky" id="aviSky">
+      <canvas id="aviCanvas"></canvas>
+      <svg class="avi-plane" id="aviPlane" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#e8e8f0"/>
+            <stop offset="40%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#c0c8e0"/>
+          </linearGradient>
+          <linearGradient id="wingGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#d0d8f0"/>
+            <stop offset="100%" stop-color="#8090b8"/>
+          </linearGradient>
+          <linearGradient id="engineGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#606878"/>
+            <stop offset="100%" stop-color="#40485a"/>
+          </linearGradient>
+          <linearGradient id="flameGrad" x1="1" y1="0" x2="0" y2="0">
+            <stop offset="0%" stop-color="#ff6600" stop-opacity="0"/>
+            <stop offset="30%" stop-color="#ff8800" stop-opacity="0.9"/>
+            <stop offset="60%" stop-color="#ffcc00" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.8"/>
+          </linearGradient>
+          <linearGradient id="flameGrad2" x1="1" y1="0" x2="0" y2="0">
+            <stop offset="0%" stop-color="#ff4400" stop-opacity="0"/>
+            <stop offset="40%" stop-color="#ff6600" stop-opacity="0.7"/>
+            <stop offset="100%" stop-color="#ffaa00" stop-opacity="0.9"/>
+          </linearGradient>
+          <linearGradient id="cockpitGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#a0d8ff"/>
+            <stop offset="100%" stop-color="#5090c0"/>
+          </linearGradient>
+          <filter id="engineGlow">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+          <filter id="planeGlow">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#ffffff" flood-opacity="0.4"/>
+          </filter>
+        </defs>
+
+        <ellipse cx="6" cy="42" rx="10" ry="3.5" fill="url(#flameGrad2)" opacity="0.7"/>
+        <ellipse cx="4" cy="42" rx="14" ry="2.5" fill="url(#flameGrad)" opacity="0.9"/>
+        <ellipse cx="5" cy="42" rx="8" ry="2" fill="#ffdd88" opacity="0.6"/>
+
+        <rect x="18" y="38" width="28" height="10" rx="5" fill="url(#engineGrad)"/>
+        <ellipse cx="18" cy="43" rx="5" ry="5" fill="#303848"/>
+        <ellipse cx="18" cy="43" rx="3.5" ry="3.5" fill="#1a2030"/>
+        <ellipse cx="46" cy="43" rx="3" ry="4" fill="#252d3a"/>
+
+        <ellipse cx="50" cy="43" rx="8" ry="2.5" fill="url(#flameGrad)" opacity="0.8"/>
+        <ellipse cx="52" cy="43" rx="5" ry="1.8" fill="#ffee88" opacity="0.7"/>
+
+        <path d="M 55 38 L 90 18 L 88 24 L 72 34 L 70 50 L 60 50 Z" fill="url(#wingGrad)"/>
+        <path d="M 55 38 L 90 18 L 88 22 L 58 37 Z" fill="rgba(255,255,255,0.25)"/>
+        <path d="M 58 48 L 72 32" stroke="rgba(0,0,0,0.15)" stroke-width="0.8" fill="none"/>
+
+        <rect x="64" y="28" width="20" height="8" rx="4" fill="url(#engineGrad)"/>
+        <ellipse cx="64" cy="32" rx="4" ry="4" fill="#303848"/>
+        <ellipse cx="64" cy="32" rx="2.8" ry="2.8" fill="#1a2030"/>
+        <ellipse cx="84" cy="32" rx="2.5" ry="3.2" fill="#252d3a"/>
+        <ellipse cx="87" cy="32" rx="6" ry="2" fill="url(#flameGrad)" opacity="0.7"/>
+
+        <path d="M 20 37 Q 8 38 2 40 Q 6 42 20 43 L 82 43 Q 96 42 108 40 Q 106 39 82 37 Z" fill="url(#bodyGrad)" filter="url(#planeGlow)"/>
+
+        <path d="M 20 41.5 Q 8 42 4 42.5 Q 6 43 20 43 L 82 43 Q 96 43 106 42 Q 100 42.5 82 41.5 Z" fill="rgba(0,0,30,0.12)"/>
+
+        <path d="M 82 37 Q 96 39 108 40 Q 96 41 82 43 Q 100 40 82 37 Z" fill="url(#bodyGrad)"/>
+        <path d="M 95 39 Q 108 40 112 40 Q 108 40.5 95 41 Z" fill="#d0d8f0"/>
+
+        <path d="M 88 38.5 Q 93 38 97 38.5 Q 97 40.5 93 41 Q 88 40.5 88 38.5 Z" fill="url(#cockpitGrad)" opacity="0.9"/>
+        <path d="M 89 38.8 Q 92 38.5 95 39 Q 92 38.6 89 38.8 Z" fill="rgba(255,255,255,0.7)" stroke="none"/>
+
+        <rect x="60" y="38.5" width="5" height="3.5" rx="1.2" fill="url(#cockpitGrad)" opacity="0.8"/>
+        <rect x="52" y="38.5" width="5" height="3.5" rx="1.2" fill="url(#cockpitGrad)" opacity="0.75"/>
+        <rect x="44" y="38.5" width="5" height="3.5" rx="1.2" fill="url(#cockpitGrad)" opacity="0.7"/>
+        <rect x="36" y="38.5" width="5" height="3.5" rx="1.2" fill="url(#cockpitGrad)" opacity="0.65"/>
+        <rect x="60.5" y="38.8" width="3" height="1.2" rx="0.6" fill="rgba(255,255,255,0.5)"/>
+        <rect x="52.5" y="38.8" width="3" height="1.2" rx="0.6" fill="rgba(255,255,255,0.5)"/>
+        <rect x="44.5" y="38.8" width="3" height="1.2" rx="0.6" fill="rgba(255,255,255,0.5)"/>
+
+        <path d="M 22 28 L 32 37 L 22 37 Z" fill="url(#wingGrad)"/>
+        <path d="M 22 28 L 30 36 L 24 36 Z" fill="rgba(255,255,255,0.2)"/>
+
+        <path d="M 20 37 L 10 28 L 14 28 L 26 37 Z" fill="url(#wingGrad)"/>
+        <path d="M 20 43 L 10 52 L 14 52 L 26 43 Z" fill="url(#wingGrad)"/>
+
+        <path d="M 30 37.8 L 82 37.8 L 82 39 L 30 39 Z" fill="#ff3344" opacity="0.6"/>
+
+        <ellipse cx="40" cy="43.5" rx="3" ry="1.5" fill="rgba(0,0,0,0.2)"/>
+        <ellipse cx="55" cy="43.5" rx="2.5" ry="1.2" fill="rgba(0,0,0,0.2)"/>
+
+        <path d="M 87 20 L 90 18 L 90 24 L 87 24 Z" fill="#b0b8d0"/>
+
+        <circle cx="90" cy="18" r="1.5" fill="#ff4444" opacity="0.9"/>
+
+        <circle cx="112" cy="40" r="1.2" fill="#ffffaa" opacity="0.8"/>
+
+        <path d="M 68 39.2 Q 72 38.8 76 39 Q 72 40.2 68 40 Z" fill="rgba(255,100,50,0.3)"/>
+      </svg>
+      <div class="avi-mult-wrap">
+        <div class="avi-mult" id="aviMult">1.00×</div>
+        <div class="avi-mult-label" id="aviMultLabel">WAITING…</div>
+      </div>
+      <div class="avi-crash-overlay" id="aviCrashOverlay">
+        <div class="avi-crash-text">FLEW AWAY!</div>
+      </div>
+    </div>
+
+    <div class="avi-history" id="aviHistory">
+      <div class="avi-hist-chip ahc-low" style="opacity:.4">—</div>
+    </div>
+
+    <div class="avi-live-bar" id="aviLiveBar"></div>
+
+    <div class="avi-controls">
+
+      <div class="avi-stats">
+        <div class="avi-stat"><div class="avi-stat-val" id="aviStatBal">₹1,000</div><div class="avi-stat-lbl">Balance</div></div>
+        <div class="avi-stat s-green"><div class="avi-stat-val" id="aviStatWon">₹0</div><div class="avi-stat-lbl">Total Won</div></div>
+        <div class="avi-stat s-red"><div class="avi-stat-val" id="aviStatLost">₹0</div><div class="avi-stat-lbl">Total Lost</div></div>
+      </div>
+
+      <div class="avi-bet-panel" id="avi-panel-a">
+        <div class="avi-panel-top">
+          <div class="avi-panel-label">✈ Bet</div>
+          <div class="avi-auto-badge" id="aviBadgeA">BET OPEN</div>
+        </div>
+        <div class="avi-bet-row">
+          <input class="avi-bet-inp" type="number" id="aviBetA" value="100" min="10" step="10" placeholder="₹ Amount"/>
+        </div>
+        <div class="avi-qrow">
+          <button class="avi-qb" onclick="aviSB('aviBetA',10)">₹10</button>
+          <button class="avi-qb" onclick="aviSB('aviBetA',50)">₹50</button>
+          <button class="avi-qb" onclick="aviSB('aviBetA',100)">₹100</button>
+          <button class="avi-qb" onclick="aviSB('aviBetA',500)">₹500</button>
+          <button class="avi-qb" onclick="aviDbl('aviBetA')">×2</button>
+          <button class="avi-qb" onclick="aviHlf('aviBetA')">½</button>
+        </div>
+        <div class="avi-auto-row">
+          <label><input type="checkbox" id="aviAutoA" onchange="toggleAutoA()"> Auto Cashout at</label>
+          <input class="avi-auto-inp" type="number" id="aviAutoValA" value="2.00" min="1.1" step="0.1" disabled placeholder="2.00"/>
+          <span style="color:rgba(255,255,255,.4);font-size:.76rem;font-weight:700;">×</span>
+        </div>
+        <button class="avi-bet-btn place" id="aviBtnA" onclick="aviBetAction('A')">Place Bet</button>
+        <div class="avi-bet-status abs-empty" id="aviStatusA"> </div>
+      </div>
+
+      <div class="avi-bet-panel" id="avi-panel-b">
+        <div class="avi-panel-top">
+          <div class="avi-panel-label">✈ Bet 2 <span style="font-size:.6rem;color:rgba(255,255,255,.3)">(simultaneous)</span></div>
+          <div class="avi-auto-badge" id="aviBadgeB" style="background:rgba(58,142,246,.15);border-color:rgba(58,142,246,.4);color:#60aaff">BET OPEN</div>
+        </div>
+        <div class="avi-bet-row">
+          <input class="avi-bet-inp" type="number" id="aviBetB" value="50" min="10" step="10" placeholder="₹ Amount"/>
+        </div>
+        <div class="avi-qrow">
+          <button class="avi-qb" onclick="aviSB('aviBetB',10)">₹10</button>
+          <button class="avi-qb" onclick="aviSB('aviBetB',50)">₹50</button>
+          <button class="avi-qb" onclick="aviSB('aviBetB',200)">₹200</button>
+          <button class="avi-qb" onclick="aviDbl('aviBetB')">×2</button>
+          <button class="avi-qb" onclick="aviHlf('aviBetB')">½</button>
+        </div>
+        <div class="avi-auto-row">
+          <label><input type="checkbox" id="aviAutoB" onchange="toggleAutoB()"> Auto Cashout at</label>
+          <input class="avi-auto-inp" type="number" id="aviAutoValB" value="5.00" min="1.1" step="0.1" disabled placeholder="5.00"/>
+          <span style="color:rgba(255,255,255,.4);font-size:.76rem;font-weight:700;">×</span>
+        </div>
+        <button class="avi-bet-btn place" id="aviBtnB" onclick="aviBetAction('B')" style="background:linear-gradient(135deg,#3a8ef6,#6c63ff);">Place Bet 2</button>
+        <div class="avi-bet-status abs-empty" id="aviStatusB"> </div>
+      </div>
+
+      <div id="aviResultInfo" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px;text-align:center;box-shadow:0 2px 12px rgba(99,120,220,.06);">
+        <div style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px;">LAST ROUND RESULT</div>
+        <div style="font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;margin-bottom:4px;" id="aviLastMult">2.34×</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:12px;" id="aviLastMsg">Next round starting…</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="aviLastBets"></div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(99,120,220,.06);">
+        <div style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:12px;">HOW TO PLAY</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(79,200,122,.2);border:1px solid rgba(79,200,122,.4);color:#4fc87a;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0;">1</div>
+            <div style="font-size:.8rem;color:var(--text2);font-weight:500;padding-top:3px;">Enter your bet amount and click <b style="color:#4fc87a">Place Bet</b> before the round starts</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(255,140,60,.2);border:1px solid rgba(255,140,60,.4);color:#ff8c3c;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0;">2</div>
+            <div style="font-size:.8rem;color:rgba(255,255,255,.6);font-weight:500;padding-top:3px;">Watch the multiplier climb — the plane can fly away at any moment!</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(232,68,90,.2);border:1px solid rgba(232,68,90,.4);color:#ff6b6b;display:flex;align-items:center;justify-content:circle;font-size:.72rem;font-weight:800;flex-shrink:0;align-items:center;justify-content:center;">3</div>
+            <div style="font-size:.8rem;color:rgba(255,255,255,.6);font-weight:500;padding-top:3px;">Hit <b style="color:#ff6b6b">Cash Out</b> before the crash to win bet × multiplier. Don't wait too long!</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(124,92,252,.2);border:1px solid rgba(124,92,252,.4);color:#a47cfc;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0;">★</div>
+            <div style="font-size:.8rem;color:rgba(255,255,255,.6);font-weight:500;padding-top:3px;">Use <b style="color:#a47cfc">Auto Cashout</b> to automatically cash out at your chosen multiplier</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(99,120,220,.06);">
+        <div style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;">MY RECENT AVIATOR BETS</div>
+        <div id="aviMyBets"><div style="text-align:center;color:var(--muted);font-size:.78rem;padding:12px 0;">No bets yet this session</div></div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+
+
+  <div class="page" id="page-ludo">
+  <div class="ludo-wrap">
+
+    <div id="ludo-lobby" style="display:none">
+      <div class="ld-hero">
+        <div class="ld-hero-badge">🏆 Winner gets 90%</div>
+        <span class="ld-hero-emoji">🎲</span>
+        <div class="ld-hero-title">LUDO KING</div>
+        <div class="ld-hero-sub">Multiplayer · Real Money · Beat Everyone!</div>
+        <div class="ld-hero-bal-pill">
+          <div class="ld-hero-bal-lbl">Balance</div>
+          <div class="ld-hero-bal-amt" id="ludoBalAmt">₹1,000.00</div>
+        </div>
+        <span class="ld-hero-star" style="top:18px;left:22px;animation-delay:.3s">⭐</span>
+        <span class="ld-hero-star" style="top:24px;left:60px;animation-delay:.8s">✨</span>
+        <span class="ld-hero-star" style="top:14px;right:60px;animation-delay:.5s">⭐</span>
+      </div>
+
+      <div class="ld-lobby-body">
+        <div class="ld-sec-title">Choose Your Bet</div>
+        <div class="ld-bet-pills">
+          <div class="ld-bet-pill" onclick="ludoSelectBet(50,this)"><div class="lbp-chk">✓</div><div class="lbp-ico">🟢</div><div class="lbp-amt">₹50</div><div class="lbp-win">Win ₹90</div><div class="lbp-wait">4 waiting</div></div>
+          <div class="ld-bet-pill sel" onclick="ludoSelectBet(100,this)"><div class="lbp-chk">✓</div><div class="lbp-ico">🔵</div><div class="lbp-amt">₹100</div><div class="lbp-win">Win ₹180</div><div class="lbp-wait">7 waiting</div></div>
+          <div class="ld-bet-pill" onclick="ludoSelectBet(250,this)"><div class="lbp-chk">✓</div><div class="lbp-ico">🟡</div><div class="lbp-amt">₹250</div><div class="lbp-win">Win ₹450</div><div class="lbp-wait">2 waiting</div></div>
+          <div class="ld-bet-pill" onclick="ludoSelectBet(500,this)"><div class="lbp-chk">✓</div><div class="lbp-ico">🔴</div><div class="lbp-amt">₹500</div><div class="lbp-win">Win ₹900</div><div class="lbp-wait">3 waiting</div></div>
+          <div class="ld-bet-pill" onclick="ludoSelectBet(1000,this)"><div class="lbp-chk">✓</div><div class="lbp-ico">💎</div><div class="lbp-amt">₹1,000</div><div class="lbp-win">Win ₹1,800</div><div class="lbp-wait">1 waiting</div></div>
+          <div class="ld-bet-pill" onclick="ludoSelectBet(2000,this)"><div class="lbp-chk">✓</div><div class="lbp-ico">👑</div><div class="lbp-amt">₹2,000</div><div class="lbp-win">Win ₹3,600</div><div class="lbp-wait">0 waiting</div></div>
+        </div>
+
+        <button class="ld-play-btn" onclick="ludoFindMatch()">Find Match &amp; Play!</button>
+
+        <div class="ld-sec-title">🎮 Live Rooms</div>
+        <div class="ld-rooms" id="ludoRoomList"></div>
+      </div>
+    </div>
+
+    <div id="ludo-matching" style="display:none">
+      <div class="ld-match-wrap">
+        <div class="ld-match-card">
+          <div class="ld-spinner">
+            <div class="ld-ring1"></div>
+            <div class="ld-ring2"></div>
+            <div class="ld-spin-inner">🎲</div>
+          </div>
+          <div class="ld-match-title">Finding Opponent!</div>
+          <div class="ld-match-sub">Bet ₹<span id="ludoMatchBet">100</span> · Winner takes 90% 🏆</div>
+          <div class="ld-match-slots" id="ludoPlayersRow"></div>
+          <div class="ld-match-status" id="ludoMatchStatus">Searching for players…</div>
+          <button class="ld-cancel-btn" onclick="ludoCancelMatch()">✕ Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="ludo-game" style="display:none">
+      <div class="ld-topbar">
+        <div><div class="ld-tb-label" id="ludoRoundLabel">2 PLAYERS · BET ₹100</div><div class="ld-tb-pot">🏆 Pot ₹<span id="ludoPotAmt">200</span></div></div>
+        <div class="ld-tb-turn" id="ludoTurnBadge">🎲 Your Turn</div>
+      </div>
+      <div class="ld-opp-strip">
+        <div class="ld-opp-av" id="ldOppAv">?</div>
+        <div><div class="ld-player-name" id="ldOppName">Opponent</div><div class="ld-player-status" id="ldOppStatus">0/4 home</div></div>
+        <div class="ld-player-tokens" id="ldOppTokens"></div>
+      </div>
+      <div class="ld-board-wrap"><canvas id="ludoCanvas"></canvas></div>
+      <div class="ld-my-strip">
+        <div class="ld-my-av" id="ldMyAv">Y</div>
+        <div><div class="ld-player-name" id="ldMyName">You</div><div class="ld-player-status" id="ldMyStatus">0/4 home</div></div>
+        <div class="ld-player-tokens" id="ldMyTokens"></div>
+      </div>
+      <div class="ld-dice-ctrl">
+        <div class="ld-dice-info">
+          <div class="ld-dice-lbl" id="ludoYourTurnLabel">🎲 Roll the Dice!</div>
+          <div id="ludoDiceDisplay" style="display:none;align-items:center;gap:8px;margin-top:4px;">
+            <span id="ludoDiceNum" style="font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;color:#1e1b4b;"></span>
+            <span id="ludoDiceBigSmall" class="ld-bs-big">BIG</span>
+          </div>
+          <div class="ld-dice-res" id="ludoDiceResult"></div>
+        </div>
+        <div class="ld-dice" id="ludoDiceFace">🎲</div>
+        <button class="ld-roll-btn" id="ludoRollBtn" onclick="ludoRoll()">🎲 Roll!</button>
+      </div>
+      <div class="ld-log-wrap"><div class="ld-log" id="ludoLog"><div class="ld-log-e" style="color:#9ca3af">Game starting…</div></div></div>
+    </div>
+
+    <div id="ludo-win" style="display:none">
+      <div style="padding:20px 13px 0" id="ludoWinContent"></div>
+    </div>
+
+  </div>
+  </div>
+
+  <div class="page" id="page-ab">
+  <div class="wrap" style="padding-bottom:100px">
+    <div class="hdr">
+      <div class="hdr-logo"><div class="hdr-icon" style="background:linear-gradient(135deg,#e8445a,#f59e0b);">🃏</div><h2 style="background:linear-gradient(135deg,#e8445a,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">ANDAR BAHAR</h2></div>
+      <div class="hdr-sub">Classic Card Game · 1.9× Payout</div>
+    </div>
+    <div class="bal-row">
+      <div><div class="bal-lbl">Balance</div><div class="bal-amt" id="abBalAmt">₹1,000.00</div></div>
+      <button class="btn-ghost" onclick="abNewRound()">🔄 New Round</button>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 16px 14px;margin-bottom:12px;text-align:center;box-shadow:0 4px 20px rgba(99,120,220,.08);">
+      <div class="sec-lbl" style="justify-content:center;margin-bottom:12px;">🃏 Joker Card</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;">
+        <div id="abJokerCard" style="width:72px;height:100px;border-radius:10px;background:#f7f9ff;border:2px dashed var(--border2);display:flex;align-items:center;justify-content:center;font-size:2.2rem;flex-direction:column;gap:2px;">?</div>
+        <div id="abJokerInfo" style="text-align:left;">
+          <div style="font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700;">Place your bet on</div>
+          <div style="font-size:1rem;font-weight:800;color:var(--text);margin-top:4px;">Andar or Bahar</div>
+          <div style="font-size:.76rem;color:var(--muted);margin-top:4px;font-weight:500;">Match the joker rank to win!</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-lbl">💰 Bet Amount</div>
+      <div class="bet-row"><input class="bet-inp" type="number" id="abBetAmt" value="100" min="10" step="10"/></div>
+      <div class="qrow">
+        <button class="qb" onclick="abSB(10)">₹10</button>
+        <button class="qb" onclick="abSB(50)">₹50</button>
+        <button class="qb" onclick="abSB(100)">₹100</button>
+        <button class="qb" onclick="abSB(500)">₹500</button>
+        <button class="qb" onclick="abDbl()">×2</button>
+        <button class="qb" onclick="abHlf()">½</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;" id="abBetBtns">
+      <button id="abAndarBtn" onclick="abPlaceBet('andar')" style="padding:20px 10px;border:2px solid #c2f0da;border-radius:18px;background:var(--green-l);color:var(--green);font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:1rem;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px var(--green-t);">🟢 ANDAR<br><span style="font-size:.7rem;opacity:.75;font-weight:700;">Left Side · ×1.9</span></button>
+      <button id="abBaharBtn" onclick="abPlaceBet('bahar')" style="padding:20px 10px;border:2px solid var(--red-m);border-radius:18px;background:var(--red-l);color:var(--red);font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:1rem;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px var(--red-t);">🔴 BAHAR<br><span style="font-size:.7rem;opacity:.75;font-weight:700;">Right Side · ×1.9</span></button>
+    </div>
+    <div id="abStatus" style="background:var(--card2);border:1.5px dashed var(--border2);border-radius:12px;padding:10px 14px;font-size:.82rem;color:var(--muted);margin-bottom:12px;text-align:center;font-weight:600;">Press New Round to start!</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(99,120,220,.06);">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div style="font-size:.66rem;letter-spacing:2px;text-transform:uppercase;color:var(--green);font-weight:800;margin-bottom:8px;text-align:center;">🟢 ANDAR</div>
+          <div id="abAndarCards" style="display:flex;flex-wrap:wrap;gap:5px;min-height:40px;justify-content:center;"></div>
+        </div>
+        <div>
+          <div style="font-size:.66rem;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:800;margin-bottom:8px;text-align:center;">🔴 BAHAR</div>
+          <div id="abBaharCards" style="display:flex;flex-wrap:wrap;gap:5px;min-height:40px;justify-content:center;"></div>
+        </div>
+      </div>
+    </div>
+    <div id="abResultBox" style="display:none;border-radius:18px;padding:20px;text-align:center;margin-bottom:12px;"></div>
+    <div class="card">
+      <div class="sec-lbl">📊 Recent Results</div>
+      <div id="abHistory" style="display:flex;gap:6px;flex-wrap:wrap;min-height:28px;"><span style="color:var(--muted);font-size:.76rem;font-weight:500">No results yet</span></div>
+    </div>
+    <div class="card">
+      <div class="sec-lbl">❓ How to Play</div>
+      <div style="font-size:.82rem;color:var(--text2);line-height:1.8;font-weight:500;">
+        <b>1.</b> Press <b>New Round</b> — a Joker card is revealed.<br>
+        <b>2.</b> Bet on <b style="color:var(--green)">Andar</b> (left) or <b style="color:var(--red)">Bahar</b> (right).<br>
+        <b>3.</b> Cards are dealt alternately to both sides.<br>
+        <b>4.</b> When a card matching the Joker rank appears — that side wins!<br>
+        <b>5.</b> Win = ×1.9 your bet. Lose = lose your bet.
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <nav class="bottom-nav" id="bottomNav" style="grid-template-columns:repeat(6,1fr);">
+    <button class="nav-item active" id="nav-game" onclick="switchNav('game')"><span class="nav-icon">🎮</span><span>Win Go</span></button>
+    <button class="nav-item" id="nav-aviator" onclick="switchNav('aviator')"><span class="nav-icon">✈️</span><span>Aviator</span></button>
+    <button class="nav-item" id="nav-ludo" onclick="switchNav('ludo')"><span class="nav-icon">🎲</span><span>Ludo</span></button>
+    <button class="nav-item" id="nav-ab" onclick="switchNav('ab')"><span class="nav-icon">🃏</span><span>A.Bahar</span></button>
+    <button class="nav-item" id="nav-history" onclick="switchNav('history')"><span class="nav-icon">📊</span><span>History</span></button>
+    <button class="nav-item" id="nav-account" onclick="switchNav('account')"><span class="nav-icon">👤</span><span>Account</span></button>
+  </nav>
+
+  <div class="modal-overlay" id="modal-deposit" onclick="overlayClose(event,this)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><span class="modal-title">💳 Add Money</span><button class="modal-close" onclick="closeModal('modal-deposit')">✕</button></div>
+    <div class="modal-body">
+      <div class="err-msg" id="dep-err">Enter a valid amount (min ₹50).</div>
+      <div class="ok-msg" id="dep-ok">₹<span id="dep-ok-amt">0</span> added to your wallet!</div>
+      <div class="field"><label>Amount (₹)</label><input type="number" id="dep-amt" placeholder="Enter amount" min="50"/></div>
+      <div class="amount-pills">
+        <span class="ap" onclick="pickAmt('dep-amt',100,this)">₹100</span>
+        <span class="ap" onclick="pickAmt('dep-amt',500,this)">₹500</span>
+        <span class="ap" onclick="pickAmt('dep-amt',1000,this)">₹1,000</span>
+        <span class="ap" onclick="pickAmt('dep-amt',2000,this)">₹2,000</span>
+        <span class="ap" onclick="pickAmt('dep-amt',5000,this)">₹5,000</span>
+      </div>
+      <div class="field"><label>Payment Method</label>
+        <select id="dep-method">
+          <option>UPI (GPay / PhonePe / Paytm)</option>
+          <option>Net Banking</option>
+          <option>Debit / Credit Card</option>
+          <option>IMPS / NEFT</option>
+        </select>
+      </div>
+      <p style="font-size:.76rem;color:var(--muted);margin-bottom:16px;font-weight:500">Instant credit · No fees · 100% secure</p>
+      <button class="btn-primary" onclick="doDeposit()">Proceed to Pay →</button>
+    </div>
+  </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-withdraw" onclick="overlayClose(event,this)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><span class="modal-title">🏦 Withdraw Funds</span><button class="modal-close" onclick="closeModal('modal-withdraw')">✕</button></div>
+    <div class="modal-body">
+      <div class="err-msg" id="wd-err">Enter a valid amount.</div>
+      <div class="ok-msg" id="wd-ok">Withdrawal of ₹<span id="wd-ok-amt">0</span> submitted!</div>
+      <div style="background:var(--violet-l);border:1px solid var(--violet-m);border-radius:12px;padding:14px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:24px">💰</span>
+        <div><div style="font-size:.72rem;color:var(--muted);font-weight:600;">Available Balance</div><div style="font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:900;color:var(--violet)" id="wd-bal">₹1,000</div></div>
+      </div>
+      <div class="field"><label>Withdraw Amount (₹)</label><input type="number" id="wd-amt" placeholder="Min ₹100"/></div>
+      <div class="amount-pills">
+        <span class="ap" onclick="pickAmt('wd-amt',100,this)">₹100</span>
+        <span class="ap" onclick="pickAmt('wd-amt',500,this)">₹500</span>
+        <span class="ap" onclick="pickAmt('wd-amt',1000,this)">₹1,000</span>
+      </div>
+      <div class="field"><label>Bank Account / UPI ID</label><input type="text" id="wd-bank" placeholder="yourname@upi or account number"/></div>
+      <div class="field"><label>IFSC / Bank Name</label><input type="text" id="wd-ifsc" placeholder="SBIN0001234 or GPay"/></div>
+      <p style="font-size:.76rem;color:var(--muted);margin-bottom:16px;font-weight:500">Processing time: 1–24 hours · Min withdrawal ₹100</p>
+      <button class="btn-primary" onclick="doWithdraw()">Request Withdrawal →</button>
+    </div>
+  </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-txhistory" onclick="overlayClose(event,this)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><span class="modal-title">📄 Transactions</span><button class="modal-close" onclick="closeModal('modal-txhistory')">✕</button></div>
+    <div class="modal-body">
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;" id="tx-filters">
+        <span class="ap sel" onclick="filterTx('all',this)">All</span>
+        <span class="ap" onclick="filterTx('win',this)">Wins</span>
+        <span class="ap" onclick="filterTx('lose',this)">Losses</span>
+        <span class="ap" onclick="filterTx('dep',this)">Deposits</span>
+        <span class="ap" onclick="filterTx('wd',this)">Withdrawals</span>
+      </div>
+      <div id="tx-table-wrap" style="overflow-x:auto;">
+        <table class="tx-table">
+          <thead><tr><th>Type</th><th>Period / Ref</th><th>Amount</th><th>Date</th></tr></thead>
+          <tbody id="tx-tbody"><tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">No transactions yet</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-profile" onclick="overlayClose(event,this)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><span class="modal-title">👤 Edit Profile</span><button class="modal-close" onclick="closeModal('modal-profile')">✕</button></div>
+    <div class="modal-body">
+      <div class="ok-msg" id="prof-ok">Profile updated!</div>
+      <div class="field-row">
+        <div class="field"><label>First Name</label><input type="text" id="prof-fname" placeholder="First"/></div>
+        <div class="field"><label>Last Name</label><input type="text" id="prof-lname" placeholder="Last"/></div>
+      </div>
+      <div class="field"><label>Email</label><input type="email" id="prof-email" placeholder="Email address"/></div>
+      <div class="field"><label>Mobile</label><input type="tel" id="prof-phone" placeholder="Mobile number"/></div>
+      <div class="field"><label>Date of Birth</label><input type="date" id="prof-dob"/></div>
+      <div class="field"><label>City / State</label><input type="text" id="prof-city" placeholder="Agra, Uttar Pradesh"/></div>
+      <button class="btn-primary" onclick="saveProfile()">Save Changes →</button>
+    </div>
+  </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-password" onclick="overlayClose(event,this)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><span class="modal-title">🔐 Change Password</span><button class="modal-close" onclick="closeModal('modal-password')">✕</button></div>
+    <div class="modal-body">
+      <div class="err-msg" id="pwd-err">Please check your entries.</div>
+      <div class="ok-msg" id="pwd-ok">Password changed successfully!</div>
+      <div class="field"><label>Current Password</label><input type="password" id="pwd-cur" placeholder="Current password"/></div>
+      <div class="field"><label>New Password</label><input type="password" id="pwd-new" placeholder="Min 6 characters"/></div>
+      <div class="field"><label>Confirm New Password</label><input type="password" id="pwd-new2" placeholder="Repeat new password"/></div>
+      <button class="btn-primary" onclick="changePassword()">Update Password →</button>
+    </div>
+  </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-refer" onclick="overlayClose(event,this)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><span class="modal-title">🎁 Refer &amp; Earn</span><button class="modal-close" onclick="closeModal('modal-refer')">✕</button></div>
+    <div class="modal-body">
+      <div class="refer-card">
+        <div style="font-size:.78rem;color:var(--text2);font-weight:600;">Your Referral Code</div>
+        <div class="refer-code" id="referCode">WINGO001</div>
+        <button class="refer-copy-btn" onclick="copyCode()">📋 Copy Code</button>
+        <p style="font-size:.76rem;color:var(--text2);margin-top:12px;font-weight:500">Share this code with friends. Both of you earn ₹50 bonus when they make their first deposit!</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:4px;">Your Referral Stats</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+          <div style="text-align:center;"><div style="font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;color:var(--violet)" id="refCount">0</div><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700">Referred</div></div>
+          <div style="text-align:center;"><div style="font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;color:var(--green)" id="refEarned">₹0</div><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700">Earned</div></div>
+        </div>
+      </div>
+      <div class="refer-steps">
+        <div class="refer-step"><div class="rs-num">1</div><div class="rs-text">Share your unique referral code with friends via WhatsApp, SMS or social media</div></div>
+        <div class="refer-step"><div class="rs-num">2</div><div class="rs-text">Friend signs up using your code and makes their first deposit of ₹100+</div></div>
+        <div class="refer-step"><div class="rs-num">3</div><div class="rs-text">You both instantly receive ₹50 bonus credited to your wallets</div></div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-notif" onclick="overlayClose(event,this)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><span class="modal-title">🔔 Notifications</span><button class="modal-close" onclick="closeModal('modal-notif')">✕</button></div>
+    <div class="modal-body">
+      <div class="notif-row">
+        <div><div class="notif-label">Game Results</div><div class="notif-desc">Get notified after each round result</div></div>
+        <label class="toggle"><input type="checkbox" checked onchange="saveNotif()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="notif-row">
+        <div><div class="notif-label">Win Alerts</div><div class="notif-desc">Celebrate your wins with a notification</div></div>
+        <label class="toggle"><input type="checkbox" checked onchange="saveNotif()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="notif-row">
+        <div><div class="notif-label">Deposit Confirmed</div><div class="notif-desc">When money is added to your wallet</div></div>
+        <label class="toggle"><input type="checkbox" checked onchange="saveNotif()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="notif-row">
+        <div><div class="notif-label">Promotions &amp; Offers</div><div class="notif-desc">Bonus offers, cashback &amp; tournaments</div></div>
+        <label class="toggle"><input type="checkbox" onchange="saveNotif()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="notif-row">
+        <div><div class="notif-label">Referral Bonus</div><div class="notif-desc">When a friend you referred deposits</div></div>
+        <label class="toggle"><input type="checkbox" checked onchange="saveNotif()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="notif-row">
+        <div><div class="notif-label">Low Balance Warning</div><div class="notif-desc">Alert when balance drops below ₹50</div></div>
+        <label class="toggle"><input type="checkbox" onchange="saveNotif()"><span class="toggle-slider"></span></label>
+      </div>
+      <p style="font-size:.74rem;color:var(--muted);margin-top:14px;font-weight:500">Settings saved automatically.</p>
+    </div>
+  </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-faq" onclick="overlayClose(event,this)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><span class="modal-title">❓ FAQ &amp; Help</span><button class="modal-close" onclick="closeModal('modal-faq')">✕</button></div>
+    <div class="modal-body">
+      <div id="faq-list"></div>
+    </div>
+  </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-support" onclick="overlayClose(event,this)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><span class="modal-title">💬 Contact Support</span><button class="modal-close" onclick="closeModal('modal-support')">✕</button></div>
+    <div class="modal-body">
+      <div style="background:linear-gradient(135deg,var(--violet-l),var(--blue-l));border:1px solid var(--violet-m);border-radius:16px;padding:18px;margin-bottom:16px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:8px;">🤝</div>
+        <div style="font-weight:800;font-size:.95rem;margin-bottom:4px;">We're here to help!</div>
+        <div style="font-size:.78rem;color:var(--text2);">Average response time: under 5 minutes</div>
+      </div>
+      <div class="ok-msg" id="sup-ok">Message sent! We'll reply within 5 minutes.</div>
+      <div class="field"><label>Subject</label>
+        <select id="sup-subject">
+          <option>Payment / Withdrawal issue</option>
+          <option>Game result dispute</option>
+          <option>Account access problem</option>
+          <option>Bonus not credited</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Your Message</label>
+        <textarea id="sup-msg" rows="4" placeholder="Describe your issue in detail…" style="width:100%;background:var(--bg);border:1.5px solid var(--border2);color:var(--text);padding:12px 14px;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;outline:none;resize:vertical;"></textarea>
+      </div>
+      <button class="btn-primary" onclick="sendSupport()">Send Message →</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;cursor:pointer;" onclick="showToast('WhatsApp support opening…','info')">
+          <div style="font-size:24px;margin-bottom:4px;">💚</div>
+          <div style="font-size:.78rem;font-weight:700;">WhatsApp</div>
+          <div style="font-size:.68rem;color:var(--muted);">+91 98765 43210</div>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;cursor:pointer;" onclick="showToast('Email support copied!','info')">
+          <div style="font-size:24px;margin-bottom:4px;">📧</div>
+          <div style="font-size:.78rem;font-weight:700;">Email</div>
+          <div style="font-size:.68rem;color:var(--muted);">support@wingo.app</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-about" onclick="overlayClose(event,this)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><span class="modal-title">ℹ️ About Win Go</span><button class="modal-close" onclick="closeModal('modal-about')">✕</button></div>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:#fff;margin:0 auto 12px;box-shadow:0 8px 24px var(--violet-glow);">◈</div>
+        <div style="font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:900;letter-spacing:3px;background:linear-gradient(135deg,var(--violet),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">WIN GO</div>
+        <div style="color:var(--muted);font-size:.78rem;margin-top:4px;">Version 1.0.0 · Build 20260322</div>
+      </div>
+      <div style="background:var(--bg);border-radius:14px;overflow:hidden;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);font-size:.86rem;"><span style="font-weight:600;">App Version</span><span style="color:var(--muted);">1.0.0</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);font-size:.86rem;"><span style="font-weight:600;">Platform</span><span style="color:var(--muted);">Web App</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);font-size:.86rem;"><span style="font-weight:600;">Supported Games</span><span style="color:var(--muted);">Win Go 1-Min</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;font-size:.86rem;"><span style="font-weight:600;">Minimum Bet</span><span style="color:var(--muted);">₹10</span></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+        <button onclick="showToast('Terms opened','info')" style="flex:1;padding:11px;border:1px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text2);cursor:pointer;font-size:.82rem;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;">📜 Terms</button>
+        <button onclick="showToast('Privacy policy opened','info')" style="flex:1;padding:11px;border:1px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text2);cursor:pointer;font-size:.82rem;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;">🔒 Privacy</button>
+        <button onclick="showToast('Responsible gaming guide opened','info')" style="flex:1;padding:11px;border:1px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text2);cursor:pointer;font-size:.82rem;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;">⚖️ Fair Play</button>
+      </div>
+      <p style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:8px;font-weight:500;">© 2026 Win Go. All rights reserved. Play responsibly.</p>
+    </div>
+  </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
